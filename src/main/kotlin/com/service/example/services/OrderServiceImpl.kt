@@ -3,6 +3,7 @@ package com.service.example.services
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
+import io.vertx.kotlin.ext.web.client.sendJsonAwait
 import org.slf4j.LoggerFactory
 
 class OrderServiceImpl(vertx: Vertx) : OrderService, ServiceProxyHandler(vertx, "orders") {
@@ -18,8 +19,8 @@ class OrderServiceImpl(vertx: Vertx) : OrderService, ServiceProxyHandler(vertx, 
   var client: WebClient = WebClient.create(vertx)
 
   override suspend fun send(order: Long) {
-    //val response = client.post("", "/delivery").sendJsonAwait(order)
-    //val json = response.bodyAsJsonObject()
+    val response = client.post("", "/delivery").sendJsonAwait(order)
+    val json = response.bodyAsJsonObject()
   }
 
   override suspend fun confirm(orderId: Long) {

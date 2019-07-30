@@ -1,5 +1,8 @@
 package com.service.example.verticles
 
+import io.vertx.core.Context
+import io.vertx.core.Vertx
+import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -10,8 +13,14 @@ import kotlinx.coroutines.launch
 
 abstract class AbstractServer : CoroutineVerticle() {
 
-  private val server = vertx.createHttpServer()
-  private val router = Router.router(vertx)
+  private lateinit var server: HttpServer
+  private lateinit var router: Router
+
+  override fun init(vertx: Vertx, context: Context) {
+    super.init(vertx, context)
+    this.server = vertx.createHttpServer()
+    this.router = Router.router(this.vertx)
+  }
 
   override suspend fun start() {
     initializeControllers()
@@ -20,12 +29,12 @@ abstract class AbstractServer : CoroutineVerticle() {
   }
 
   private suspend fun listen() {
-    server.requestHandler(router)
-    server.listenAwait(8080) //TODO: Add port configuration
+    this.server.requestHandler(this.router)
+    this.server.listenAwait(8080) //TODO: Add port configuration
   }
 
   private fun addRoutes() {
-    addRoutes(router)
+    addRoutes(this.router)
   }
 
   fun Route.handlerAwait(fn: suspend (RoutingContext) -> Unit) {
