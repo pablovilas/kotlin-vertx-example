@@ -1,17 +1,18 @@
 package com.service.example.controllers
 
-import com.service.example.services.EventBusProxy
+import com.service.example.services.OrderService
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import org.slf4j.LoggerFactory
 
 
-class OrderController(vertx: Vertx) : EventBusProxy(vertx, "orders") {
+class OrderController(vertx: Vertx) {
+
+  val orderService = OrderService.createProxy(vertx)
 
   suspend fun create(context: RoutingContext) {
-    val result = send<JsonObject>("create", context.bodyAsJson)
-    context.response().end("Result $result")
+    //val result = send<JsonObject>("create", context.bodyAsJson)
+    //context.response().end("Result $result")
   }
 
   suspend fun confirm(context: RoutingContext) {
@@ -23,9 +24,9 @@ class OrderController(vertx: Vertx) : EventBusProxy(vertx, "orders") {
   }
 
   suspend fun track(context: RoutingContext) {
-    logger.info("Atiendo")
+    logger.info("OrderController::track")
     val orderId = context.request().getParam("id").toLong()
-    val result = send<JsonObject>("track", mapOf("id" to orderId))
+    val result = orderService.track(orderId)
     context.response().end("Result $result")
   }
 

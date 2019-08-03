@@ -6,15 +6,7 @@ import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.ext.web.client.sendJsonAwait
 import org.slf4j.LoggerFactory
 
-class OrderServiceImpl(vertx: Vertx) : OrderService, ServiceProxyHandler(vertx, "orders") {
-
-  override suspend fun onEvent(action: String, body: JsonObject): JsonObject {
-    val orderId = body.getLong("id")
-    when(action) {
-      "track" -> track(orderId)
-    }
-    return JsonObject.mapFrom("result" to "default")
-  }
+class OrderServiceImpl(vertx: Vertx) : OrderService {
 
   var client: WebClient = WebClient.create(vertx)
 
@@ -32,7 +24,7 @@ class OrderServiceImpl(vertx: Vertx) : OrderService, ServiceProxyHandler(vertx, 
   }
 
   override suspend fun track(orderId: Long) : JsonObject {
-    logger.info("Llego mensaje")
+    logger.info("OrderServiceImpl::track")
     return JsonObject().put("value", 10L)
   }
 
