@@ -24,7 +24,7 @@ application {
 }
 
 
-def mainVerticleName = 'com.service.example.verticles.MainVerticle'
+def mainVerticleName = 'com.service.example.application.App'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 

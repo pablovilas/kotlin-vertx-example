@@ -6,35 +6,24 @@ import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.dispatcher
 import io.vertx.serviceproxy.ProxyHandler
 import io.vertx.serviceproxy.ServiceException
-import io.vertx.serviceproxy.ServiceExceptionMessageCodec
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-abstract class AbstractVertxProxyHandler<T>(
+abstract class AbstractProxyHandler(
   private val vertx: Vertx,
-  private val service: T,
   topLevel: Boolean,
   private val timeoutSeconds: Long
 ) : ProxyHandler() {
   private val timerID: Long
   private var lastAccessed: Long = 0
   @JvmOverloads
-  constructor(vertx: Vertx, service: T, timeoutInSecond: Long = DEFAULT_CONNECTION_TIMEOUT) : this(
+  constructor(vertx: Vertx, timeoutInSecond: Long = DEFAULT_CONNECTION_TIMEOUT) : this(
     vertx,
-    service,
     true,
     timeoutInSecond
   )
 
   init {
-    try {
-      this.vertx.eventBus().registerDefaultCodec(
-        ServiceException::class.java,
-        ServiceExceptionMessageCodec()
-      )
-    } catch (ex: IllegalStateException) {
-    }
-
     if (timeoutSeconds != -1L && !topLevel) {
       var period = timeoutSeconds * 1000 / 2
       if (period > 10000) {
@@ -46,7 +35,6 @@ abstract class AbstractVertxProxyHandler<T>(
     }
     accessed()
   }
-
 
   private fun checkTimedOut(id: Long) {
     val now = System.nanoTime()
@@ -80,9 +68,9 @@ abstract class AbstractVertxProxyHandler<T>(
           throw exception
         }
       }
-    } catch (t: Throwable) {
-      msg.reply(ServiceException(500, t.message))
-      throw t
+    } catch (throwable: Throwable) {
+      msg.reply(ServiceException(500, throwable.message))
+      throw throwable
     }
   }
 

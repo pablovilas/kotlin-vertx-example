@@ -1,6 +1,6 @@
 package com.service.example
 
-import com.service.example.verticles.MainVerticle
+import com.service.example.application.App
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -13,7 +13,7 @@ class TestMainVerticle {
 
   @BeforeEach
   fun deploy_verticle(vertx: Vertx, testContext: VertxTestContext) {
-    vertx.deployVerticle(MainVerticle(), testContext.succeeding<String> { _ -> testContext.completeNow() })
+    vertx.deployVerticle(App(), testContext.succeeding<String> { _ -> testContext.completeNow() })
   }
 
   @Test

@@ -1,23 +1,32 @@
 package com.service.example.services
 
+import com.service.example.models.Order
+import com.service.example.services.proxies.OrderServiceEventBusProxy
+import com.service.example.services.proxies.OrderServiceProxyHandler
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonObject
 
 interface OrderService {
 
-  suspend fun send(order: Long)
-  suspend fun confirm(orderId: Long)
-  suspend fun cancel(orderId: Long)
-  suspend fun track(orderId: Long) : JsonObject
+  suspend fun list() : List<Order>
+  suspend fun create(order: Order) : Order
+  suspend fun read(id: Long) : Order
+  suspend fun update(order: Order) : Order
+  suspend fun delete(id: Long) : Order
 
   companion object {
-    fun create(vertx: Vertx): OrderService {
-      return OrderServiceImpl(vertx)
-    }
+
     fun createProxy(vertx: Vertx): OrderService {
-      return OrderServiceEBProxy(vertx, ADDRESS)
+      return OrderServiceEventBusProxy(vertx, ADDRESS)
     }
-    const val ADDRESS = "order-service"
+
+    fun createHandler(vertx: Vertx) {
+      val orderService = OrderServiceImpl(vertx)
+      OrderServiceProxyHandler(vertx, orderService)
+        .register(vertx.eventBus(), ADDRESS)
+    }
+
+    private const val ADDRESS = "order-service"
+
   }
 
 }
