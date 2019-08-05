@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.ResponseContentTypeHandler
 import io.vertx.ext.web.handler.TimeoutHandler
 import io.vertx.kotlin.core.http.listenAwait
@@ -48,6 +49,7 @@ abstract class Server : CoroutineVerticle() {
   private fun handleGlobalDefaults() {
     val catchAllRoute = "/*"
     val jsonMimeType = "application/json"
+    this.router.post(catchAllRoute).handler(BodyHandler.create())
     this.router.route(catchAllRoute).handler(TimeoutHandler.create(500))
     this.router.route(catchAllRoute)
       .consumes(jsonMimeType)

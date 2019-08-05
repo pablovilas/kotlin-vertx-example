@@ -23,7 +23,7 @@ class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
   }
 
   suspend fun read(context: RoutingContext) {
-    val id = context.request().getParam("id").toLong()
+    val id = context.request().getParam("id")
     val order = orderService.read(id)
     context.success(order)
   }
@@ -35,7 +35,7 @@ class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
   }
 
   suspend fun delete(context: RoutingContext) {
-    val id = context.request().getParam("id").toLong()
+    val id = context.request().getParam("id")
     val order = orderService.delete(id)
     context.success(order)
   }

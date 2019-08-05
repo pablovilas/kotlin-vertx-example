@@ -1,7 +1,14 @@
 package com.service.example.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class Order (
-  var id: Long = 0,
-  var total: Long = 0,
-  var user: String? = null
+  @JsonProperty("id")
+  var id: String?,
+
+  @JsonProperty("total")
+  var total: Long?,
+
+  @JsonProperty("user")
+  var user: String?
 )

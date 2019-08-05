@@ -15,19 +15,19 @@ class OrderServiceImpl(vertx: Vertx) : OrderService {
 
   override suspend fun create(order: Order) : Order {
     val id = orderRepository.save(order) ?: "0"
-    return orderRepository.read(id.toLong())
+    return orderRepository.read(id)
   }
 
-  override suspend fun read(id: Long) : Order {
+  override suspend fun read(id: String) : Order {
     return orderRepository.read(id)
   }
 
   override suspend fun update(order: Order) : Order {
     val id = orderRepository.save(order) ?: "0"
-    return orderRepository.read(id.toLong())
+    return orderRepository.read(id)
   }
 
-  override suspend fun delete(id: Long) : Order {
+  override suspend fun delete(id: String) : Order {
     val order = read(id)
     orderRepository.delete(id)
     return order

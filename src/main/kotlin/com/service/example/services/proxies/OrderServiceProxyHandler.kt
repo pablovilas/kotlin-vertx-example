@@ -18,7 +18,7 @@ class OrderServiceProxyHandler(vertx: Vertx, val service: OrderService) : Abstra
         return ModelConverter.toJson(service.create(order))
       }
       "read" -> {
-        val id = message.getLong("id")
+        val id = message.getString("id")
         return ModelConverter.toJson(service.read(id))
       }
       "update" -> {
@@ -26,7 +26,7 @@ class OrderServiceProxyHandler(vertx: Vertx, val service: OrderService) : Abstra
         return ModelConverter.toJson(service.update(order))
       }
       "delete" -> {
-        val id = message.getLong("id")
+        val id = message.getString("id")
         return ModelConverter.toJson(service.delete(id))
       }
     }

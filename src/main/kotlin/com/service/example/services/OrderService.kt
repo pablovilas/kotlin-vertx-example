@@ -9,9 +9,9 @@ interface OrderService {
 
   suspend fun list() : List<Order>
   suspend fun create(order: Order) : Order
-  suspend fun read(id: Long) : Order
+  suspend fun read(id: String) : Order
   suspend fun update(order: Order) : Order
-  suspend fun delete(id: Long) : Order
+  suspend fun delete(id: String) : Order
 
   companion object {
 

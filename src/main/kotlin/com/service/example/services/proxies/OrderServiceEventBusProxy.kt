@@ -17,7 +17,7 @@ class OrderServiceEventBusProxy(vertx: Vertx, address: String) : OrderService, A
     return ModelConverter.fromJson(this.send("create", ModelConverter.toJson(order)) as JsonObject)
   }
 
-  override suspend fun read(id: Long) : Order {
+  override suspend fun read(id: String) : Order {
     return ModelConverter.fromJson(this.send("read", JsonObject.mapFrom(mapOf("id" to id))) as JsonObject)
   }
 
@@ -25,7 +25,7 @@ class OrderServiceEventBusProxy(vertx: Vertx, address: String) : OrderService, A
     return ModelConverter.fromJson(this.send("update", ModelConverter.toJson(order)) as JsonObject)
   }
 
-  override suspend fun delete(id: Long) : Order {
+  override suspend fun delete(id: String) : Order {
     return ModelConverter.fromJson(this.send("delete", JsonObject.mapFrom(mapOf("id" to id))) as JsonObject)
   }
 
