@@ -1,6 +1,8 @@
 package com.service.example.application
 
+import com.service.example.application.configuration.Config
 import io.vertx.core.DeploymentOptions
+import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.deployVerticleAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
@@ -10,12 +12,19 @@ class App : CoroutineVerticle() {
 
   override suspend fun start() {
     try {
-      vertx.deployVerticleAwait("com.service.example.application.WebServer", DeploymentOptions().setInstances(2))
-      vertx.deployVerticleAwait("com.service.example.application.Service", DeploymentOptions().setInstances(2))
+      val config = Config.load(vertx)
+      vertx.deployVerticleAwait(
+        "com.service.example.application.WebServer",
+        DeploymentOptions().setConfig(config).setInstances(2)
+      )
+      vertx.deployVerticleAwait(
+        "com.service.example.application.Service",
+        DeploymentOptions().setConfig(config).setInstances(2)
+      )
+      logger.info(getSplash())
     } catch (ex: Exception) {
       logger.error("Cannot start application", ex)
     }
-    logger.info(getSplash())
   }
 
   private fun getSplash() : String {
@@ -28,7 +37,7 @@ class App : CoroutineVerticle() {
   }
 
   companion object {
-    val logger = LoggerFactory.getLogger(App::class.java)
+    val logger: Logger = LoggerFactory.getLogger(App::class.java)
   }
 
 }

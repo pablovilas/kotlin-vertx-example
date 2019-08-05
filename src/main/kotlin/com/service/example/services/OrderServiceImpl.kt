@@ -1,40 +1,36 @@
 package com.service.example.services
 
 import com.service.example.models.Order
+import com.service.example.repositories.OrderRepository
 import io.vertx.core.Vertx
 import org.slf4j.LoggerFactory
 
 class OrderServiceImpl(vertx: Vertx) : OrderService {
 
-  //var client: WebClient = WebClient.create(vertx)
+  private val orderRepository = OrderRepository(vertx)
 
   override suspend fun list() : List<Order> {
-    //val response = client.post("", "/delivery").sendJsonAwait(order)
-    // val json = response.bodyAsJsonObject()
-    throw RuntimeException("Shit happens. not proceess")
-    return listOf(
-      Order(1L, 100L, "Pablo"),
-      Order(2L, 100L, "Pablo"), Order(1L, 100L, "Pablo"),
-      Order(3L, 100L, "Pablo")
-    )
+    return orderRepository.list()
   }
 
   override suspend fun create(order: Order) : Order {
-    //val response = client.post("", "/delivery").sendJsonAwait(order)
-   // val json = response.bodyAsJsonObject()
-    return Order(1L, 100L, "Pablo")
+    val id = orderRepository.save(order) ?: "0"
+    return orderRepository.read(id.toLong())
   }
 
   override suspend fun read(id: Long) : Order {
-    return Order(id, 100L, "Pablo")
+    return orderRepository.read(id)
   }
 
   override suspend fun update(order: Order) : Order {
-    return order
+    val id = orderRepository.save(order) ?: "0"
+    return orderRepository.read(id.toLong())
   }
 
   override suspend fun delete(id: Long) : Order {
-    return Order(1L, 100L, "Pablo")
+    val order = read(id)
+    orderRepository.delete(id)
+    return order
   }
 
   companion object {

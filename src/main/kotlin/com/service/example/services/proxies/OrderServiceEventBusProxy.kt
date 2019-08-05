@@ -1,5 +1,6 @@
 package com.service.example.services.proxies
 
+import com.service.example.models.converters.ModelConverter
 import com.service.example.models.Order
 import com.service.example.services.OrderService
 import io.vertx.core.Vertx
@@ -9,23 +10,23 @@ import io.vertx.core.json.JsonObject
 class OrderServiceEventBusProxy(vertx: Vertx, address: String) : OrderService, AbstractEventBusProxy(vertx, address) {
 
   override suspend fun list() : List<Order> {
-    return Order.fromJsonArray(this.send<JsonArray>("list", JsonObject()))
+    return ModelConverter.fromJson(this.send("list", JsonObject()) as JsonArray)
   }
 
   override suspend fun create(order: Order) : Order {
-    return Order.fromJson(this.send<JsonObject>("create", order.toJson()))
+    return ModelConverter.fromJson(this.send("create", ModelConverter.toJson(order)) as JsonObject)
   }
 
   override suspend fun read(id: Long) : Order {
-    return Order.fromJson(this.send<JsonObject>("read", JsonObject.mapFrom(mapOf("id" to id))))
+    return ModelConverter.fromJson(this.send("read", JsonObject.mapFrom(mapOf("id" to id))) as JsonObject)
   }
 
   override suspend fun update(order: Order): Order {
-    return Order.fromJson(this.send<JsonObject>("update", order.toJson()))
+    return ModelConverter.fromJson(this.send("update", ModelConverter.toJson(order)) as JsonObject)
   }
 
   override suspend fun delete(id: Long) : Order {
-    return Order.fromJson(this.send<JsonObject>("delete", JsonObject.mapFrom(mapOf("id" to id))))
+    return ModelConverter.fromJson(this.send("delete", JsonObject.mapFrom(mapOf("id" to id))) as JsonObject)
   }
 
 }

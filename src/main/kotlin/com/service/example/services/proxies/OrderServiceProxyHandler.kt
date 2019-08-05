@@ -1,34 +1,33 @@
 package com.service.example.services.proxies
 
 import com.service.example.models.Order
+import com.service.example.models.converters.ModelConverter
 import com.service.example.services.OrderService
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import java.lang.IllegalStateException
-import kotlin.streams.toList
 
 class OrderServiceProxyHandler(vertx: Vertx, val service: OrderService) : AbstractProxyHandler(vertx) {
   override suspend fun handle(action: String, message: JsonObject): Any {
     when (action) {
       "list" -> {
-        return JsonArray(service.list().stream().map { Order.toJson(it) }.toList())
+        return ModelConverter.toJson(service.list())
       }
       "create" -> {
-        val order = Order.fromJson(message)
-        return service.create(order).toJson()
+        val order = ModelConverter.fromJson<Order>(message)
+        return ModelConverter.toJson(service.create(order))
       }
       "read" -> {
         val id = message.getLong("id")
-        return service.read(id).toJson()
+        return ModelConverter.toJson(service.read(id))
       }
       "update" -> {
-        val order = Order.fromJson(message)
-        return service.update(order).toJson()
+        val order = ModelConverter.fromJson<Order>(message)
+        return ModelConverter.toJson(service.update(order))
       }
       "delete" -> {
         val id = message.getLong("id")
-        return service.delete(id).toJson()
+        return ModelConverter.toJson(service.delete(id))
       }
     }
     throw throw IllegalStateException("action $action is not valid")

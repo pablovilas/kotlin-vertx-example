@@ -1,11 +1,11 @@
 package com.service.example.controllers
 
 import com.service.example.models.Order
+import com.service.example.models.converters.ModelConverter
 import com.service.example.services.OrderService
 import com.service.example.services.OrderServiceImpl
 import io.vertx.core.Vertx
 import io.vertx.ext.web.RoutingContext
-import org.slf4j.LoggerFactory
 
 class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
 
@@ -17,7 +17,7 @@ class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
   }
 
   suspend fun create(context: RoutingContext) {
-    val data = Order.fromJson(context.bodyAsJson)
+    val data = ModelConverter.fromJson<Order>(context.bodyAsJson)
     val order = orderService.create(data)
     context.created(order)
   }
@@ -29,7 +29,7 @@ class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
   }
 
   suspend fun update(context: RoutingContext) {
-    val data = Order.fromJson(context.bodyAsJson)
+    val data = ModelConverter.fromJson<Order>(context.bodyAsJson)
     val order = orderService.update(data)
     context.success(order)
   }

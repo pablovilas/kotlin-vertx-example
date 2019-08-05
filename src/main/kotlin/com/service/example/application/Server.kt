@@ -34,8 +34,9 @@ abstract class Server : CoroutineVerticle() {
   }
 
   private suspend fun listen() {
+    val port = this.config.getJsonObject("server").getInteger("port")
     this.server.requestHandler(this.router)
-    this.server.listenAwait(8080) //TODO: Add port configuration
+    this.server.listenAwait(port)
   }
 
   private fun addRoutes() {
