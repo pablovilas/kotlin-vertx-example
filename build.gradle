@@ -95,17 +95,13 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
   args "-F", "src/**/*.kt"
 }
 
-tasks.create(name: 'gitExecutableHooks') << {
-  Runtime.getRuntime().exec("chmod -R +x .git/hooks/");
-}
-
 task installGitHooks(type: Copy) {
   from new File(rootProject.rootDir, 'pre-commit')
   into { new File(rootProject.rootDir, '.git/hooks') }
+  fileMode 0777
 }
 
-gitExecutableHooks.dependsOn installGitHooks
-clean.dependsOn gitExecutableHooks
+build.dependsOn installGitHooks
 
 sourceSets {
   main {
