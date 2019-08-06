@@ -89,5 +89,4 @@ abstract class Server : CoroutineVerticle() {
 
   abstract fun initializeControllers()
   abstract fun handleRoutes(router: Router)
-
 }

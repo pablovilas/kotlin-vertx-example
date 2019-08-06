@@ -27,7 +27,7 @@ class App : CoroutineVerticle() {
     }
   }
 
-  private fun getSplash() : String {
+  private fun getSplash(): String {
     val inputStream = javaClass.getResourceAsStream("/splash.txt")
     val reader = InputStreamReader(inputStream)
     val splash = reader.readText()
@@ -39,5 +39,4 @@ class App : CoroutineVerticle() {
   companion object {
     val logger: Logger = LoggerFactory.getLogger(App::class.java)
   }
-
 }

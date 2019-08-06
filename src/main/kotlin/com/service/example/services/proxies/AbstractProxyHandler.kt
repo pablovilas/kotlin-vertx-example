@@ -75,7 +75,7 @@ abstract class AbstractProxyHandler(
   }
 
   @Throws(IllegalStateException::class)
-  abstract suspend fun handle(action: String, message: JsonObject) : Any
+  abstract suspend fun handle(action: String, message: JsonObject): Any
 
   companion object {
     const val DEFAULT_CONNECTION_TIMEOUT = (5 * 60).toLong() // 5 minutes
