@@ -94,6 +94,14 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
   classpath = configurations.ktlint
   args "-F", "src/**/*.kt"
 }
+
+task installGitHooks(type: Copy) {
+  from new File(rootProject.rootDir, 'pre-commit')
+  into { new File(rootProject.rootDir, '.git/hooks') }
+}
+
+build.dependsOn installGitHooks
+
 sourceSets {
   main {
     java {
