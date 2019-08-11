@@ -19,5 +19,19 @@
     "sendBufferSize": 8192,
     "receiveBufferSize": 8192,
     "keepAlive": true
+  },
+  "aws": {
+    "accessKey": "x",
+    "secretKey": "x",
+    "sqs": {
+      "endpointOverride": "http://localhost:9324",
+      "region": "elasticmq",
+      "queues": [
+        {
+          "queueName": "test-queue",
+          "workers": 2
+        }
+      ]
+    }
   }
 }
