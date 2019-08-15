@@ -23,7 +23,7 @@ class App : CoroutineVerticle() {
       )
       vertx.deployVerticleAwait(
         "com.service.example.application.EventSource",
-        DeploymentOptions().setConfig(config).setInstances(2)
+        DeploymentOptions().setConfig(config).setInstances(0)
       )
       logger.info(getSplash())
 

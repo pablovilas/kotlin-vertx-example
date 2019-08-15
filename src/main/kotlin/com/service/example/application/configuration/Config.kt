@@ -35,7 +35,7 @@ object Config {
     // Default configuration file
     val fileStore = ConfigStoreOptions()
       .setType("file")
-      .setConfig(JsonObject().put("path", "config/application.json"))
+      .setConfig(JsonObject().put("path", "application.json"))
 
     stores.add(fileStore)
 
@@ -44,7 +44,7 @@ object Config {
       // Environment configuration file will override default configurations
       val envFileStore = ConfigStoreOptions()
         .setType("file")
-        .setConfig(JsonObject().put("path", "config/application-${Environment.getEnvironment()}.json"))
+        .setConfig(JsonObject().put("path", "application-${Environment.getEnvironment()}.json"))
 
       // Vault configuration
       val vaultStore = ConfigStoreOptions()
