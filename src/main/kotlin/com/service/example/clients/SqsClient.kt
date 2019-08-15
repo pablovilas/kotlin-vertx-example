@@ -7,33 +7,23 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.*
-import java.net.URI
 import java.util.HashMap
 import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.*
 
 class SqsClient(
-  val vertx: Vertx,
-  awsConfig: JsonObject
+  private val vertx: Vertx,
+  private val sqsClient: SqsAsyncClient,
+  private val queueConfig: JsonObject
 ) : CoroutineScope {
 
   private val supervisorJob = SupervisorJob()
   override val coroutineContext: CoroutineContext
     get() = vertx.dispatcher() + supervisorJob
-  private val sqs: SqsAsyncClient
-  private lateinit var queueConfig: JsonObject
 
-  init {
-    sqs = createClient(awsConfig)
-  }
-
-  fun receive(config: JsonObject, onReceivedMessage: suspend (String) -> Boolean) {
-    this.queueConfig = config
+  fun receive(onReceivedMessage: suspend (String) -> Boolean) {
     launchWorkers(onReceivedMessage)
   }
 
@@ -61,14 +51,14 @@ class SqsClient(
     if (delaySeconds > 0) {
       request.delaySeconds(delaySeconds)
     }
-    return sqs.sendMessage(request.build()).await()
+    return sqsClient.sendMessage(request.build()).await()
   }
 
   suspend fun delete(receiptHandle: String) {
     val request = DeleteMessageRequest.builder()
       .queueUrl(queueUrl())
       .receiptHandle(receiptHandle).build()
-    sqs.deleteMessage(request).await()
+    sqsClient.deleteMessage(request).await()
   }
 
   suspend fun delete(message: Message) {
@@ -81,19 +71,11 @@ class SqsClient(
       .receiptHandle(message.receiptHandle())
       .visibilityTimeout(10)
       .build()
-    sqs.changeMessageVisibility(request).await()
+    sqsClient.changeMessageVisibility(request).await()
   }
 
   fun stop() {
     supervisorJob.cancel()
-  }
-
-  private fun getCredentials(config: JsonObject): AwsBasicCredentials {
-    val awsJsonObject = config.getJsonObject("aws")
-    return AwsBasicCredentials.create(
-      awsJsonObject.getString("accessKey"),
-      awsJsonObject.getString("secretKey")
-    )
   }
 
   private fun buildAttributes(attributes: List<MessageAttribute>): Map<String, MessageAttributeValue> {
@@ -110,26 +92,11 @@ class SqsClient(
     return sqsAttributes
   }
 
-  private fun createClient(config: JsonObject): SqsAsyncClient {
-    val credentials = getCredentials(config)
-    val sqsConfig = config.getJsonObject("aws").getJsonObject("sqs")
-    val endpointOverride = sqsConfig.getString("endpointOverride")
-    val region = sqsConfig.getString("region") ?: Region.US_WEST_1.id()
-
-    val clientBuilder = SqsAsyncClient.builder()
-      .credentialsProvider(StaticCredentialsProvider.create(credentials))
-      .region(Region.of(region))
-    if (endpointOverride.isNotEmpty()) {
-      clientBuilder.endpointOverride(URI(endpointOverride))
-    }
-    return clientBuilder.build()
-  }
-
   private suspend fun queueUrl(): String {
     var queueUrl = queueConfig.getString("queueUrl") ?: String()
     if (queueUrl.isEmpty()) {
       val queueName = queueConfig.getString("queueName")
-      queueUrl = sqs.getQueueUrl(
+      queueUrl = sqsClient.getQueueUrl(
         GetQueueUrlRequest.builder()
           .queueName(queueName)
           .build()
@@ -140,7 +107,7 @@ class SqsClient(
   }
 
   private fun launchWorkers(onMessage: suspend (String) -> Boolean) = launch {
-    val workersAmount = this@SqsClient.queueConfig.getInteger("workers") ?: 1
+    val workersAmount = queueConfig.getInteger("workers") ?: 1
     val messageChannel = Channel<Message>()
     repeat(workersAmount) {
       launchWorker(messageChannel, onMessage)
@@ -155,7 +122,7 @@ class SqsClient(
         .waitTimeSeconds(queueConfig.getInteger("waitTimeSeconds") ?: 20)
         .maxNumberOfMessages(queueConfig.getInteger("maxNumberOfMessages") ?: 10)
         .build()
-      val messages = sqs.receiveMessage(receiveRequest).await().messages()
+      val messages = sqsClient.receiveMessage(receiveRequest).await().messages()
       messages.forEach {
         channel.send(it)
       }

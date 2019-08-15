@@ -30,6 +30,10 @@
         {
           "queueName": "test-queue",
           "workers": 2
+        },
+        {
+          "queueName": "test-queue-2",
+          "workers": 2
         }
       ]
     }
