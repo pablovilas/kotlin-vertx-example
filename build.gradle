@@ -38,6 +38,7 @@ dependencies {
   implementation "io.vertx:vertx-config-consul:$vertxVersion"
   implementation "org.slf4j:jcl-over-slf4j:1.7.20"
   implementation "ch.qos.logback:logback-classic:1.1.7"
+  implementation 'software.amazon.awssdk:sqs:2.7.17'
 
   testImplementation "io.vertx:vertx-junit5:$vertxVersion"
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"

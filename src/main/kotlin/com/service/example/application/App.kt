@@ -21,7 +21,12 @@ class App : CoroutineVerticle() {
         "com.service.example.application.Service",
         DeploymentOptions().setConfig(config).setInstances(2)
       )
+      vertx.deployVerticleAwait(
+        "com.service.example.application.EventSource",
+        DeploymentOptions().setConfig(config).setInstances(2)
+      )
       logger.info(getSplash())
+
     } catch (ex: Exception) {
       logger.error("Cannot start application", ex)
     }
