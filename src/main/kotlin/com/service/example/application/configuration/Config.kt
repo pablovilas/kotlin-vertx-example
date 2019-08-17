@@ -11,7 +11,7 @@ object Config {
 
   private lateinit var retriever: ConfigRetriever
 
-  suspend fun load(vertx: Vertx) : JsonObject {
+  suspend fun load(vertx: Vertx): JsonObject {
     val options = getOptions()
     retriever = ConfigRetriever.create(vertx, options)
     retriever.getConfigAwait()
@@ -62,5 +62,4 @@ object Config {
 
     return stores
   }
-
 }

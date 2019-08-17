@@ -5,8 +5,8 @@ import io.vertx.ext.web.Router
 
 class WebServer : Server() {
 
-  private lateinit var orderController : OrderController
-  private lateinit var orderControllerEventBus : OrderController
+  private lateinit var orderController: OrderController
+  private lateinit var orderControllerEventBus: OrderController
 
   override fun initializeControllers() {
     orderController = OrderController(vertx)
@@ -27,5 +27,4 @@ class WebServer : Server() {
     router.put("/v2/orders").handlerAwait(orderControllerEventBus::update)
     router.delete("/v2/orders/:id").handlerAwait(orderControllerEventBus::delete)
   }
-
 }

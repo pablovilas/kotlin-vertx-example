@@ -11,6 +11,11 @@ To launch your tests:
 ./gradlew clean test
 ```
 
+To format your code:
+```
+./gradlew ktlintFormat
+```
+
 To package your application:
 ```
 ./gradlew clean assemble
@@ -27,5 +32,5 @@ To run your application:
 * https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
 * https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
 * https://gitter.im/eclipse-vertx/vertx-users[Vert.x Gitter]
-
+* https://ktlint.github.io/#rules[Ruleset KtLint]
 

@@ -46,5 +46,4 @@ class OrderController(val vertx: Vertx, usesEventBus: Boolean = false) {
     }
     return OrderServiceImpl(this.vertx)
   }
-
 }

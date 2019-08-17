@@ -14,17 +14,17 @@ abstract class EntityRepository<T, ID>(vertx: Vertx, val collection: String) {
 
   val client: MongoClient = MongoClient.createShared(vertx, Config.get().getJsonObject("database"))
 
-  suspend inline fun <reified T>list(query: JsonObject = JsonObject()): List<T> {
+  suspend inline fun <reified T> list(query: JsonObject = JsonObject()): List<T> {
     val result = client.findAwait(collection, query)
     return ModelConverter.fromJson(result)
   }
 
-  suspend inline fun <reified T>save(entity: T): String? {
+  suspend inline fun <reified T> save(entity: T): String? {
     val document = ModelConverter.toJson(entity)
     return client.saveAwait(collection, document)
   }
 
-  suspend inline fun <reified T>read(id: ID, fields: JsonObject = JsonObject()): T {
+  suspend inline fun <reified T> read(id: ID, fields: JsonObject = JsonObject()): T {
     val query = JsonObject().put("_id", id)
     val result = client.findOneAwait(collection, query, fields) ?: JsonObject()
     return ModelConverter.fromJson(result)
