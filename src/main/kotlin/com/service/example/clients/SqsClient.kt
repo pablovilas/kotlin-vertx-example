@@ -3,15 +3,30 @@ package com.service.example.clients
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.*
+import java.util.HashMap
+import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import software.amazon.awssdk.services.sqs.model.*
-import java.util.HashMap
-import java.util.concurrent.CompletableFuture
-import kotlin.coroutines.*
+import software.amazon.awssdk.services.sqs.model.ChangeMessageVisibilityRequest
+import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest
+import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest
+import software.amazon.awssdk.services.sqs.model.Message
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse
 
 class SqsClient(
   private val vertx: Vertx,
@@ -20,8 +35,7 @@ class SqsClient(
 ) : CoroutineScope {
 
   private val supervisorJob = SupervisorJob()
-  override val coroutineContext: CoroutineContext
-    get() = vertx.dispatcher() + supervisorJob
+  override val coroutineContext: CoroutineContext by lazy { vertx.dispatcher() + supervisorJob }
 
   fun receive(onReceivedMessage: suspend (String) -> Boolean) {
     launchWorkers(onReceivedMessage)

@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 
 class App : CoroutineVerticle() {
 
-  override suspend fun start() {
+  override suspend fun start(){
     try {
       val config = Config.load(vertx)
       vertx.deployVerticleAwait(
@@ -23,10 +23,9 @@ class App : CoroutineVerticle() {
       )
       vertx.deployVerticleAwait(
         "com.service.example.application.EventSource",
-        DeploymentOptions().setConfig(config).setInstances(0)
+        DeploymentOptions().setConfig(config).setInstances(2)
       )
       logger.info(getSplash())
-
     } catch (ex: Exception) {
       logger.error("Cannot start application", ex)
     }

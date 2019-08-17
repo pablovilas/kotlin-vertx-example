@@ -2,11 +2,11 @@ package com.service.example.clients
 
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
+import java.net.URI
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import java.net.URI
 
 class AwsClient(
   private val vertx: Vertx,

@@ -20,6 +20,11 @@
     "receiveBufferSize": 8192,
     "keepAlive": true
   },
+  "cache": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "database": 1
+  },
   "aws": {
     "accessKey": "x",
     "secretKey": "x",

@@ -1,8 +1,8 @@
 package com.service.example.clients
 
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.ObjectOutputStream
-import java.io.ByteArrayOutputStream
 
 class MessageAttribute(
   private var name: String,
@@ -74,7 +74,5 @@ class MessageAttribute(
     } catch (ex: IOException) {
       return ""
     }
-
   }
-
 }
