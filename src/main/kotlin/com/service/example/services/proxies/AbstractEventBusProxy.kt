@@ -7,8 +7,8 @@ import io.vertx.serviceproxy.ServiceException
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec
 
 abstract class AbstractEventBusProxy constructor(
-  private val vertx: Vertx,
-  private val address: String
+    private val vertx: Vertx,
+    private val address: String
 ) {
 
   init {

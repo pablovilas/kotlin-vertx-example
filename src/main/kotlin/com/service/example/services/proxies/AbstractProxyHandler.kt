@@ -10,10 +10,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 abstract class AbstractProxyHandler(
-  private val vertx: Vertx,
-  topLevel: Boolean,
-  private val timeoutSeconds: Long
+    private val vertx: Vertx,
+    topLevel: Boolean,
+    private val timeoutSeconds: Long
 ) : ProxyHandler() {
+
   private val timerID: Long
   private var lastAccessed: Long = 0
   @JvmOverloads
@@ -25,9 +26,9 @@ abstract class AbstractProxyHandler(
 
   init {
     if (timeoutSeconds != -1L && !topLevel) {
-      var period = timeoutSeconds * 1000 / 2
-      if (period > 10000) {
-        period = 10000
+      var period = timeoutSeconds * TIMEOUT_MULTIPLIER
+      if (period > MAX_PERIOD) {
+        period = MAX_PERIOD
       }
       this.timerID = vertx.setPeriodic(period) { this.checkTimedOut(it) }
     } else {
@@ -38,7 +39,7 @@ abstract class AbstractProxyHandler(
 
   private fun checkTimedOut(id: Long) {
     val now = System.nanoTime()
-    if (now - lastAccessed > timeoutSeconds * 1000000000) {
+    if (now - lastAccessed > timeoutSeconds * CLOSE_MULTIPLIER) {
       close()
     }
   }
@@ -64,12 +65,12 @@ abstract class AbstractProxyHandler(
           val result = handle(action, json)
           msg.reply(result)
         } catch (exception: Exception) {
-          msg.reply(ServiceException(500, exception.message))
+          msg.reply(ServiceException(ERROR_CODE, exception.message))
           throw exception
         }
       }
     } catch (throwable: Throwable) {
-      msg.reply(ServiceException(500, throwable.message))
+      msg.reply(ServiceException(ERROR_CODE, throwable.message))
       throw throwable
     }
   }
@@ -78,6 +79,10 @@ abstract class AbstractProxyHandler(
   abstract suspend fun handle(action: String, message: JsonObject): Any
 
   companion object {
-    const val DEFAULT_CONNECTION_TIMEOUT = (5 * 60).toLong() // 5 minutes
+    private const val DEFAULT_CONNECTION_TIMEOUT: Long = 5 * 60 // 5 minutes
+    private const val TIMEOUT_MULTIPLIER: Long = 1000 / 2
+    private const val CLOSE_MULTIPLIER: Long = 1000000000 // 1000000 seconds
+    private const val MAX_PERIOD: Long = 10000 // 10 seconds
+    private const val ERROR_CODE = 500
   }
 }

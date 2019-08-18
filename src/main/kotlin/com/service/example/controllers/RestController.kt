@@ -1,20 +1,11 @@
 package com.service.example.controllers
 
+import com.service.example.application.HttpCode
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-
-class HttpCode {
-  companion object {
-    const val OK = 200
-    const val CREATED = 201
-    const val BAD_REQUEST = 400
-    const val NOT_FOUND = 404
-    const val INTERNAL_SERVER_ERROR = 500
-  }
-}
 
 private val logger = LoggerFactory.getLogger(RoutingContext::class.java)
 

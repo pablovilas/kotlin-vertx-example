@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
-  <Blacklist>
-  </Blacklist>
+  <Blacklist></Blacklist>
   <Whitelist>
+    <ID>ConstructorParameterNaming:Order.kt$Order$@JsonProperty("_id") @JsonInclude(Include.NON_NULL) var _id: String?</ID>
+    <ID>SwallowedException:MessageAttribute.kt$MessageAttribute$catch (ex: IOException) { return "" }</ID>
   </Whitelist>
 </SmellBaseline>

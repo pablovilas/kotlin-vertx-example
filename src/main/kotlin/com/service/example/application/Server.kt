@@ -50,7 +50,7 @@ abstract class Server : CoroutineVerticle() {
     val catchAllRoute = "/*"
     val jsonMimeType = "application/json"
     this.router.post(catchAllRoute).handler(BodyHandler.create())
-    this.router.route(catchAllRoute).handler(TimeoutHandler.create(500))
+    this.router.route(catchAllRoute).handler(TimeoutHandler.create(DEFAULT_TIMEOUT))
     this.router.route(catchAllRoute)
       .consumes(jsonMimeType)
       .produces(jsonMimeType)
@@ -58,17 +58,17 @@ abstract class Server : CoroutineVerticle() {
   }
 
   private fun handleErrors() {
-    this.router.errorHandler(400) { ctx ->
+    this.router.errorHandler(HttpCode.BAD_REQUEST) { ctx ->
       launch(ctx.vertx().dispatcher()) {
         ctx.badRequest()
       }
     }
-    this.router.errorHandler(404) { ctx ->
+    this.router.errorHandler(HttpCode.NOT_FOUND) { ctx ->
       launch(ctx.vertx().dispatcher()) {
         ctx.notFound()
       }
     }
-    this.router.errorHandler(500) { ctx ->
+    this.router.errorHandler(HttpCode.INTERNAL_SERVER_ERROR) { ctx ->
       launch(ctx.vertx().dispatcher()) {
         ctx.internalServerError()
       }
@@ -87,6 +87,20 @@ abstract class Server : CoroutineVerticle() {
     }
   }
 
+  companion object {
+    private const val DEFAULT_TIMEOUT: Long = 500 // ms
+  }
+
   abstract fun initializeControllers()
   abstract fun handleRoutes(router: Router)
+}
+
+class HttpCode {
+  companion object {
+    const val OK = 200
+    const val CREATED = 201
+    const val BAD_REQUEST = 400
+    const val NOT_FOUND = 404
+    const val INTERNAL_SERVER_ERROR = 500
+  }
 }

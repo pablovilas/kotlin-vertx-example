@@ -2,6 +2,7 @@ package com.service.example.clients
 
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
+import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.coroutines.dispatcher
 import java.util.HashMap
 import java.util.concurrent.CompletableFuture
@@ -29,9 +30,9 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse
 
 class SqsClient(
-  private val vertx: Vertx,
-  private val sqsClient: SqsAsyncClient,
-  private val queueConfig: JsonObject
+    private val vertx: Vertx,
+    private val sqsClient: SqsAsyncClient,
+    private val queueConfig: JsonObject
 ) : CoroutineScope {
 
   private val supervisorJob = SupervisorJob()
@@ -42,18 +43,18 @@ class SqsClient(
   }
 
   suspend fun send(
-    obj: Any,
-    attributes: List<MessageAttribute> = emptyList(),
-    delaySeconds: Int = 0
+      obj: Any,
+      attributes: List<MessageAttribute> = emptyList(),
+      delaySeconds: Int = 0
   ): SendMessageResponse {
     val messageString = JsonObject.mapFrom(obj).encode()
     return send(messageString, attributes, delaySeconds)
   }
 
   suspend fun send(
-    message: String,
-    attributes: List<MessageAttribute> = emptyList(),
-    delaySeconds: Int = 0
+      message: String,
+      attributes: List<MessageAttribute> = emptyList(),
+      delaySeconds: Int = 0
   ): SendMessageResponse {
     val request = SendMessageRequest
       .builder()
@@ -83,7 +84,7 @@ class SqsClient(
     val request = ChangeMessageVisibilityRequest.builder()
       .queueUrl(queueUrl())
       .receiptHandle(message.receiptHandle())
-      .visibilityTimeout(10)
+      .visibilityTimeout(VISIBILITY_TIMEOUT)
       .build()
     sqsClient.changeMessageVisibility(request).await()
   }
@@ -133,8 +134,8 @@ class SqsClient(
     repeat {
       val receiveRequest = ReceiveMessageRequest.builder()
         .queueUrl(queueUrl())
-        .waitTimeSeconds(queueConfig.getInteger("waitTimeSeconds") ?: 20)
-        .maxNumberOfMessages(queueConfig.getInteger("maxNumberOfMessages") ?: 10)
+        .waitTimeSeconds(queueConfig.getInteger("waitTimeSeconds") ?: WAIT_TIME_SECONDS)
+        .maxNumberOfMessages(queueConfig.getInteger("maxNumberOfMessages") ?: MAX_NUMBER_OF_MESSAGES)
         .build()
       val messages = sqsClient.receiveMessage(receiveRequest).await().messages()
       messages.forEach {
@@ -152,12 +153,20 @@ class SqsClient(
             if (processed) {
               delete(message)
             }
-          } catch (ex: Exception) {
+          } catch (exception: Exception) {
+            logger.error("Error processing message: ${message.body()}", exception)
             changeVisibility(message)
           }
         }
       }
     }
+
+  companion object {
+    private const val VISIBILITY_TIMEOUT = 10
+    private const val WAIT_TIME_SECONDS = 20
+    private const val MAX_NUMBER_OF_MESSAGES = 10
+    private val logger = LoggerFactory.getLogger(SqsClient::class.java)
+  }
 }
 
 private suspend fun CoroutineScope.repeat(block: suspend () -> Unit) {

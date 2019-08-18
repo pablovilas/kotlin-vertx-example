@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Order(
-  @JsonProperty("_id")
-  @JsonInclude( Include.NON_NULL )
-  var _id: String?,
+    @JsonProperty("_id")
+    @JsonInclude(Include.NON_NULL)
+    var _id: String?,
 
-  @JsonProperty("id")
-  var id: Long?,
+    @JsonProperty("id")
+    var id: Long?,
 
-  @JsonProperty("total")
-  var total: Long?,
+    @JsonProperty("total")
+    var total: Long?,
 
-  @JsonProperty("user")
-  var user: String?
+    @JsonProperty("user")
+    var user: String?
 )

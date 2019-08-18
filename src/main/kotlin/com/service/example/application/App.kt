@@ -10,7 +10,7 @@ import java.io.InputStreamReader
 
 class App : CoroutineVerticle() {
 
-  override suspend fun start(){
+  override suspend fun start() {
     try {
       val config = Config.load(vertx)
       vertx.deployVerticleAwait(

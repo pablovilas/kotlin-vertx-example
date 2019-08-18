@@ -14,8 +14,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class CacheClient(
-  val vertx: Vertx,
-  val config: JsonObject
+    val vertx: Vertx,
+    val config: JsonObject
 ) : CoroutineScope {
 
   override val coroutineContext: CoroutineContext by lazy { vertx.dispatcher() }

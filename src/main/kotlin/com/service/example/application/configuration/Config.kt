@@ -10,6 +10,7 @@ import io.vertx.kotlin.config.getConfigAwait
 object Config {
 
   private lateinit var retriever: ConfigRetriever
+  private const val SCAN_PERIOD: Long = 3000 // 30s
 
   suspend fun load(vertx: Vertx): JsonObject {
     val options = getOptions()
@@ -25,7 +26,7 @@ object Config {
   private fun getOptions(): ConfigRetrieverOptions {
     val configRetrieverOptions = ConfigRetrieverOptions()
     configRetrieverOptions.stores = getStores()
-    configRetrieverOptions.scanPeriod = 30000 // 30s
+    configRetrieverOptions.scanPeriod = SCAN_PERIOD
     return configRetrieverOptions
   }
 

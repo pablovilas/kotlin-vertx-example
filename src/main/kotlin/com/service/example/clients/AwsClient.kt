@@ -9,8 +9,8 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 
 class AwsClient(
-  private val vertx: Vertx,
-  private val awsConfig: JsonObject
+    private val vertx: Vertx,
+    private val awsConfig: JsonObject
 ) {
 
   fun createSqsClient(): SqsAsyncClient {

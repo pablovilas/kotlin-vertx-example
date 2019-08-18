@@ -5,8 +5,8 @@ import java.io.IOException
 import java.io.ObjectOutputStream
 
 class MessageAttribute(
-  private var name: String,
-  private var type: String
+    private var name: String,
+    private var type: String
 ) {
 
   private lateinit var value: String
@@ -50,17 +50,18 @@ class MessageAttribute(
   }
 
   private fun isNumber(value: Any): Boolean {
+    var isNumber = false
     if (value is Number) {
-      return true
+      isNumber = true
     }
     if (value.javaClass.isPrimitive) {
-      return when (value.javaClass.name) {
+      isNumber = when (value.javaClass.name) {
         "void" -> false
         "boolean" -> false
         else -> true
       }
     }
-    return false
+    return isNumber
   }
 
   private fun convertToBinary(obj: Any): String {
