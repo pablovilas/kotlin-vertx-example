@@ -11,9 +11,8 @@ import io.vertx.redis.client.RedisAPI
 import io.vertx.redis.client.RedisOptions
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-class CacheClient(
+class RedisClient(
     val vertx: Vertx,
     val config: JsonObject
 ) : CoroutineScope {
@@ -22,32 +21,26 @@ class CacheClient(
   lateinit var connection: Redis
   lateinit var client: RedisAPI
 
-  init {
-    launch {
-      createClient()
-    }
-  }
-
-  private suspend fun createClient() {
+  suspend fun createClient(): RedisAPI {
     val config = getConfig()
     connection = Redis.createClient(vertx, config).connectAwait()
     connection.exceptionHandler { ex ->
       logger.fatal("Fatal exception connecting with Redis", ex)
     }
     client = RedisAPI.api(connection)
+    return client
   }
 
   private fun getConfig(): RedisOptions {
-    val redisConfig = config.getJsonObject("cache")
-    val port = redisConfig.getInteger("port")
-    val host = redisConfig.getString("host")
-    val database = redisConfig.getInteger("database")
+    val port = config.getInteger("port")
+    val host = config.getString("host")
+    val database = config.getInteger("database")
     return RedisOptions()
       .setEndpoint(SocketAddress.inetSocketAddress(port, host))
       .setSelect(database)
   }
 
   companion object {
-    private val logger = LoggerFactory.getLogger(CacheClient::class.java)
+    private val logger = LoggerFactory.getLogger(RedisClient::class.java)
   }
 }
