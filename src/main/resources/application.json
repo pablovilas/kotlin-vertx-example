@@ -3,7 +3,7 @@
     "port": 8080
   },
   "database": {
-    "host": "127.0.0.1",
+    "host": "host.docker.internal",
     "port": 27017,
     "db_name": "vertxApp",
     "useObjectId": true,
@@ -21,7 +21,7 @@
     "keepAlive": true
   },
   "cache": {
-    "host": "127.0.0.1",
+    "host": "host.docker.internal",
     "port": 6379,
     "database": 1
   },
@@ -29,7 +29,7 @@
     "accessKey": "x",
     "secretKey": "x",
     "sqs": {
-      "endpointOverride": "http://localhost:9324",
+      "endpointOverride": "http://host.docker.internal:9324",
       "region": "elasticmq",
       "queues": [
         {
