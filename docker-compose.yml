@@ -11,6 +11,11 @@ services:
       - "8080:8080"
   database:
     image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - "./dockercompose/mongo/:/data/db"
     ports:
       - "27017:27017"
   cache:
@@ -20,6 +25,6 @@ services:
   sqs:
     image: s12v/elasticmq:latest
     volumes:
-      - "/Users/pablo/:/etc/elasticmq/"
+      - "./dockercompose/elasticmq/:/etc/elasticmq/"
     ports:
       - "9324:9324"
