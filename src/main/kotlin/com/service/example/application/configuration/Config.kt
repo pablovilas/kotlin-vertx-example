@@ -11,13 +11,12 @@ object Config {
 
   private lateinit var retriever: ConfigRetriever
   private const val SCAN_PERIOD: Long = 3000 // 30s
-  private const val PORT_NUMBER = 443
 
   suspend fun load(vertx: Vertx): JsonObject {
     val options = getOptions()
     retriever = ConfigRetriever.create(vertx, options)
     retriever.getConfigAwait()
-      return get()
+    return get()
   }
 
   fun get(): JsonObject {
@@ -41,16 +40,26 @@ object Config {
 
     stores.add(fileStore)
 
+    if (!Environment.isDevelopment()) {
+
+      // Environment configuration file will override default configurations
+      val envFileStore = ConfigStoreOptions()
+        .setType("file")
+        .setConfig(JsonObject().put("path", "application-${Environment.getEnvironment()}.json"))
+
+      // Vault configuration
+      val vaultStore = ConfigStoreOptions()
+      .setType("vault")
+
       // Consul configuration
       val consulStore = ConfigStoreOptions()
         .setType("consul")
-        .setConfig(JsonObject().put("host", "consul.peya.co")
-          .put("port", PORT_NUMBER).put("ssl", true)
-          .put("prefix", "services/kotlin-example/stg")
-        )
-        .setOptional(false)
+        .setOptional(true)
 
+      stores.add(envFileStore)
+      stores.add(vaultStore)
       stores.add(consulStore)
+    }
 
     return stores
   }

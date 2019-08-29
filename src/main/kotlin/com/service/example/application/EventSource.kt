@@ -2,6 +2,7 @@ package com.service.example.application
 
 import com.service.example.clients.AwsClient
 import com.service.example.clients.SqsClient
+import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 
 class EventSource : CoroutineVerticle() {
@@ -11,5 +12,19 @@ class EventSource : CoroutineVerticle() {
 
   override suspend fun start() {
     super.start()
+    awsClient = AwsClient(vertx, config)
+    val sqsClient = awsClient.createSqsClient()
+    val queuesConfig = this.config.getJsonObject("aws")
+      .getJsonObject("sqs")
+      .getJsonArray("queues")
+    queuesConfig.forEach { config ->
+      val queueClient = SqsClient(vertx, sqsClient, config as JsonObject)
+      val queueName = config.getString("queueName")
+      queueClient.receive { message ->
+          println("Received message from $queueName: $message")
+          return@receive true
+      }
+      queueClients.add(queueClient)
+    }
   }
 }
